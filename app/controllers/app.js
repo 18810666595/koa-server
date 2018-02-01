@@ -12,14 +12,14 @@ exports.signature = function* (next) {
 exports.hasBody = function* (next) {
   console.log('hasBody');
   let body = this.request.body || {};
-  if (!body || Object.keys(body).length === 0) {
+  if (Object.keys(body).length === 0) {
     this.body = {
       success: false,
       err: '是不是漏掉什么了',
     };
     return next;
   }
-  yield next
+  yield next;
 };
 
 exports.hasToken = function* (next) {
