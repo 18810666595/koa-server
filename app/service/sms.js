@@ -45,11 +45,9 @@ exports.send = function (phoneNumber, msg) {
       }
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
-        // console.log(JSON.parse(chunk));
         dataStr += chunk;
       });
       res.on('end', function () {
-        // console.log('over');
         let data;
         try {
           data = JSON.parse(dataStr);

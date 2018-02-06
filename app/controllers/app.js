@@ -2,15 +2,36 @@
 
 const mongoose = require('mongoose');
 let User = mongoose.model('User');
+const uuid = require('uuid');
+const robot = require('../service/robot');
 
 exports.signature = function* (next) {
+  let body = this.request.body;
+  let cloud = body.cloud; //客户端指定图床
+  let key;
+  let token;  //签名
+
+  if (cloud === 'qiniu') {
+    //使用七牛
+    console.log(cloud);
+    key = uuid.v4() + '.png';
+    token = robot.getQiniuToken(key);
+  } else {
+    //使用 cloudinary
+    token = robot.getCloudinaryToken(body);
+  }
+  console.log('key', key);
+  console.log('token', token);
   this.body = {
     success: true,
+    data: {
+      token,
+      key,
+    },
   };
 };
 
 exports.hasBody = function* (next) {
-  console.log('hasBody');
   let body = this.request.body || {};
   if (Object.keys(body).length === 0) {
     this.body = {
@@ -23,13 +44,7 @@ exports.hasBody = function* (next) {
 };
 
 exports.hasToken = function* (next) {
-  console.log('hasToken');
-
-  console.log('query', this.query);
-  console.log('body', this.request.body);
-
   let accessToken = this.query.accessToken || this.request.body.accessToken;
-  console.log(accessToken);
 
   if (!accessToken) {
     this.body = {

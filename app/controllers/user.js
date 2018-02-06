@@ -8,7 +8,6 @@ const sms = require('../service/sms');
 
 exports.signup = function* (next) {
   let phoneNumber = xss(this.request.body.phoneNumber.trim());
-  console.log('phoneNumber: ' + phoneNumber);
   let user = yield User.findOne({
     phoneNumber,
   }).exec();  // 调用 exec 变成 promise
@@ -34,7 +33,6 @@ exports.signup = function* (next) {
     user = yield user.save();
   }
   catch (e) {
-    console.log('1111\n' + e);
     this.body = {
       success: false,
     };
